@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subdomain Enumeration</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            text-align: center; /* Center the form */
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block; /* Label on its own line */
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            text-align: center; /* Center error messages */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Responsive table */
+        @media screen and (max-width: 600px) {
+            table {
+                display: block; /* Stack table cells vertically */
+                overflow-x: auto; /* Add horizontal scroll if needed */
+            }
+
+            th,
+            td {
+                display: block; /* Make cells stack */
+                width: auto; /* Let cells take available width */
+            }
+
+            th {
+                text-align: left; /* Align header text to the left */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Subdomain Enumeration</h1>
+
+    <form id="subdomain-form" method="GET">  </form>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if results and results.subdomains %}
+        <div class="results">
+            <h2>Subdomains:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subdomain</th>
+                        <th>Status</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in results.subdomains %}
+                        {% if item is mapping %}
+                            <tr>
+                                <td>{{ item.subdomain }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.ip }}</td>
+                            </tr>
+                        {% else %}
+                            {% set parts = item.split("|") %}
+                            {% if parts|length == 3 %}
+                                <tr>
+                                    <td>{{ parts[0].strip() }}</td>
+                                    <td>{{ parts[1].strip() }}</td>
+                                    <td>{{ parts[2].strip() }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <script>
+        const form = document.getElementById('subdomain-form');
+        const domainInput = document.createElement('input');
+        domainInput.type = 'text';
+        domainInput.id = 'domain';
+        domainInput.name = 'domain';
+        domainInput.placeholder = 'Enter Domain';
+        domainInput.value = "{{ domain or '' }}"; // Set the value from Flask
+
+        const submitButton = document.createElement('input');
+        submitButton.type = 'submit';
+        submitButton.value = 'Enumerate';
+
+        form.appendChild(domainInput);
+        form.appendChild(submitButton);
+
+
+    </script>
+
+</body>
+</html>

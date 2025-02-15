@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp1-service
+spec:
+  selector:
+    app: myapp1
+  ports:
+  - protocol: TCP
+    port: 80  # The port that the service exposes (can be different from targetPort)
+    targetPort: 5000  # Your application port
+    name: http
+    nodePort: 30005  # Choose an available port in the 30000-32767 range
+  - protocol: TCP
+    port: 8000  # Prometheus metrics port
+    targetPort: 8000  # Must match the port your application listens on for metrics
+    name: metrics
+    nodePort: 30002  # Choose a *different* available port in the 30000-32767 range
+  type: NodePort
